@@ -1,0 +1,747 @@
+.MODEL small
+printstart macro val1 ;macro for printing interface
+lea dx,val1
+mov ah,9
+int 21h
+endm
+newline macro ;macro for newline
+mov dl,10
+mov ah,2
+int 21h
+mov dl,13
+mov ah,2
+int 21h
+endm
+inputpromt macro
+mov dl,">" ; for showcasing > before input
+mov ah,2
+int 21h
+endm
+arrprint macro arr
+LOCAL arr1
+lea si,arr
+mov cx,8
+mov ah,2
+arr1:
+mov dl,[si]
+add dl,48
+int 21h
+inc si
+loop arr1
+endm
+calcprice macro chker,totalprice,noofquantity,arrlist
+LOCAL loop2, exit12, exit13
+mov al,chker
+dec al
+mov chker,al
+mov al,chker
+mov ah,0
+mov si,0
+mov cx,6
+mov bh,0
+loop2:
+cmp si,ax
+je exit12
+inc si
+jmp exit13
+exit12:
+mov cx,1
+exit13:
+loop loop2
+mov al,arrlist[si]
+mov ah,0
+mov bl,noofquantity
+mov bh,0
+mul bx
+add totalprice,ax
+endm
+check macro destination,checker,num
+LOCAL sloop1, exit1, exitloop
+lea si,destination
+mov cl,0
+sloop1:
+cmp cl,6
+jge exitloop
+cmp num,[si]
+je exit1:
+inc si
+inc cl
+jmp sloop1
+exit1:
+mov bl,num
+mov checker,bl
+jmp exitloop
+exitloop:
+endm
+digitoutput macro val1
+mov ax,val1
+mov bl,100
+div bl
+mov dh,ah ; the remainder--->the next input to divide
+mov dl,al
+add dl,48
+mov ah,2
+int 21h
+mov al,dh
+mov ah,0
+mov bl,10
+div bl
+mov dh,ah
+mov dl,al
+add dl,48
+mov ah,2
+int 21h
+mov dl,dh
+add dl,48
+mov ah,2
+int 21h
+endm
+digitoutputv2 macro val1
+mov dx,0
+mov ax,val1
+mov bx,1000
+div bx
+mov cx,dx
+mov dx,ax
+add dl,48
+mov ah,2
+int 21h
+mov ax,cx
+mov bl,100
+div bl
+mov dh,ah
+mov dl,al
+add dl,48
+mov ah,2
+int 21h
+mov al,dh
+mov ah,0
+mov bl,10
+div bl
+mov dh,ah
+mov dl,al
+add dl,48
+mov ah,2
+int 21h
+mov al,dh
+mov ah,0
+mov bl,1
+div bl
+mov dl,al
+add dl,48
+mov ah,2
+int 21h
+endm
+.STACK 100H
+.DATA
+subtotalfare dw 0
+giventaka dw 0
+returnfare dw 0
+extraneed dw 0
+destination db 1,2,3,4,5,6 ; array for destination
+pricelist db 10,20,30,40,50,60 ; array for ticket price
+totalticketprice dw 0 ; for total ticket price----------------200
+totalpricecostnow dw 0 ; for disable customers
+snacks db 1,2,3,4,5,6 ;
+snackslist db 20,50,20,30,30,40
+totalscackprice dw 0
+luggage db 1,2,3
+luggagelist db 50,50,50
+totalluggageprice dw 0
+checker db 0 ; for checking if the destination is correctly given or not --------(5-1)
+noofticket db 0 ; total number of ticket ------------------------------------------(4)
+checker1 db 0 ; for checking if the snacks is correctly given or not
+noofsnacks db 0 ; total number of snacks price
+checker2 db 0
+noofluggage db 0
+id db 0
+idnumber db 8 dup(?)
+dest1 db "MIRPUR-11$"
+dest2 db "MIRPUR-10$"
+dest3 db "KAZIPARA$"
+dest4 db "MOTIJHEEL$"
+dest5 db "AGARGAON$"
+dest6 db "FARMGATE$"
+promt10 db "***********************************************************************$"
+promt11 db " WELCOME TO METRO RAILSTATION$"
+promt12 db " KAWRAN BAZAR STATION$"
+promt13 db " PRESS ONE DESTINATION FROM THE FOLLOWING LIST$"
+promt14 db "(1) MIRPUR-11 [10 TAKA] [20 TAKA] MIRPUR-10 (2)$"
+promt15 db "(3) KAZIPARA [30 TAKA] [40 TAKA] MOTIJHEEL (4)$"
+promt16 db "(5) AGARGAON [50 TAKA] [60 TAKA] FARM GATE (6)$"
+promt17 db "ENTER HOW MANY TICKETS YOU WANT (MAX 5)? $"
+promt18 db "METRO RAIL OFFER SOME WIDE VARIETY OF SNACKS $"
+promt19 db "(1) A/C COMPARTMENT NON A/C COMPARTMENT (2)$"
+promt20 db "(1) SEATED COACH SLEEPER COACH (2)$"
+promt21 db "WOULD YOU LIKE TO GIVE IT A TRY? [Y/N] $"
+promt22 db "(1) CHIPS [20 TAKA] [50 TAKA] SANDWICH (2)$"
+promt23 db "(3) WATER [20 TAKA] [30 TAKA] CAKE (4)$"
+promt24 db "(5) BEVERAGE [30 TAKA] [40 TAKA] JUICE (6)$"
+promt25 db "ENTER THE ITEM NO: $"
+promt26 db "ENTER QUANTITY (MAX 5) $"
+promt27 db "WOULD YOU LIKE TO HAVE ANY OTHER SNACKS? [Y/N] $"
+promt28 db "50% AND 20% OFF ON TKCKET FARE FOR STUDENTS AND GOVT
+EMPLOYEES $"
+promt29 db "ARE YOU A GOVT EMPLOYEE OR STUDENT? [Y/N] $"
+promt30 db "PLEASE ENTER YOU 8 DIGIT INSTITUTIONAL ID [8 DIGIT] $"
+promt31 db "ARE YOU FACING ANY DISABILITY? [Y/N] $"
+promt32 db "YOU HAVE BEEN WAVED FULL FREE TICKET PASS FOR THE JOURNEY $"
+promt33 db "IF ANY ASSISTANCE IS REQUIRED AT THE EXIT STOPAGE? [Y/N] $"
+promt34 db "DO YOU HAVE ANY EXTRA BAGGAGE TO DECLARE (50 TAKA PER EXTRA
+LUGGAGE)? [Y/N] $"
+promt35 db "(1) EXTRA LUGGAGE PETS (2)$"
+promt36 db "(3) BICYCLE$"
+promt37 db "ENTER THE EXTRA LUGGAGE ITEM NO: $"
+promt38 db "WOULD YOU LIKE TO ADD MORE BAGGAGE? [Y/N] $"
+promt39 db "TOTAL BILL TO PAY : $"
+promt40 db " TAKA$"
+promt41 db "MORE TAKA TO PAY $"
+bill01 db "************************* BILL ******************************$"
+bill10 db "BILL ID : 01XF21CF2 TIME : 09:15 AM$"
+bill11 db "DEPARTURE:KAWRAN BAZAR ARRIVAL:$"
+bill12 db "TOTAL TICKET FARE : $"
+bill13 db "TOTAL SNACK BILL: $"
+bill14 db "DISCOUNT COMISSONED ON ID NUMBER: $"
+bill15 db "UPDATED TICKET FARE : $"
+bill16 db "FULL TICKET FARE WAVED FOR DISABILITY $"
+bill17 db "EXTRA LUGGAGE/PETS/BICYCLE BILL : $"
+bill18 db "TOTAL BILL : $"
+bill19 db "TOTAL PAYMENT : $"
+bill20 db "TOTAL CHANGE : $"
+bill21 db " CARRY THIS BILL FOR SAFE EXIT FOR DISABLED PERSON$"
+bill22 db " CLAIMING EXTRA BAGGAGE,VERIFICATION OF ID,SNACKS TOKEN (IF
+APPLICABLE) $"
+invalid10 db "INVALID SELECTION WOULD YOU LIKE TO TRY AGAIN? [Y/N] $"
+invalid11 db "INVALID DIGIT INPUT $"
+exit10 db " THANK YOU FOR CHOOSING METRO RAIL$"
+exit11 db " SYSTEM DEVELOPED BY NEMAZIZ LTD$"
+ac db "A/C COMPARTMENT$"
+nonac db "A/C COMPARTMENT$"
+coach1 db "SEATED COACH$"
+coach2 db "SLEEPER COACH$"
+acval db 0
+nonacval db 0
+coach1val db 0
+coach2val db 0
+discount db 0
+foodselect db 0
+disabled db 0
+assistance db 0
+extrabaggage db 0
+; declare variables here
+.CODE
+MAIN PROC
+; initialize DS
+MOV AX,@DATA
+MOV DS,AX
+; enter your code here
+printstart promt10 ;from here
+newline
+printstart promt11 ;printstart macro is called for printing
+newline ;newline macro is called for new line printing
+printstart promt12
+newline
+printstart promt10
+newline
+printstart promt13
+newline
+newline
+printstart promt14
+newline
+newline
+printstart promt15
+newline
+newline
+printstart promt16
+newline
+newline ;to here opening interface is printed
+segment1: ;////////////////////destination selection
+inputpromt ; for showcasing > before input
+mov ah,1 ; for taking destination input
+int 21h
+sub al,48
+check destination,checker,al ; return 0 / 1,2,3,4,5,6 168-180 error checking
+part
+newline
+cmp checker,0 ; chceking if input is valid or not
+jne segment2 ;.....................everything is fine go further
+printstart invalid10 ;for invalid input
+mov ah,1 ; for taking destination input
+int 21h
+cmp al,"n"
+je mainexit
+newline
+jmp segment1
+segment2: ;//////////////////non of ticket wanted
+newline
+printstart promt17 ; how many ticket wanted
+newline
+error1: ; if error return here
+inputpromt
+mov ah,1 ; for taking number of ticket input
+int 21h
+sub al,48
+mov noofticket,al ; total umber ticket is stored in variable
+cmp al,5 ; chceking if input is valid or not
+jle segment3
+newline
+printstart invalid10 ;for invalid input
+mov ah,1 ; for taking no of ticket input
+int 21h
+cmp al,"n"
+je mainexit
+newline
+jmp error1
+segment3: ;////////////////////////ac/non compartment
+newline
+newline
+printstart promt19
+newline
+inputpromt ; for showcasing > before input
+mov ah,1 ; for taking ac/nonac input
+int 21h
+sub al,48
+cmp al,1
+je ac1
+mov nonacval,al
+jmp segment4
+ac1:
+mov acval,al
+segment4: ;/////////////////////seated or sleeper coach
+newline
+newline
+printstart promt20
+newline
+inputpromt ; for showcasing > before input
+mov ah,1 ; for taking seated or sleeper input
+int 21h
+sub al,48
+cmp al,1
+je coach11
+mov coach2val,al
+jmp segment5
+coach11:
+mov coach1val,al
+segment5: ;//////////////////////////calculating the total price
+calcprice checker,totalticketprice,noofticket,pricelist
+newline
+;digitoutput totalticketprice
+segment6: ;/////////////////FOOD SECTION
+newline
+newline
+printstart promt18
+newline
+printstart promt21
+mov ah,1 ; for taking YES/NO input
+int 21h
+cmp al,"n"
+je segment7
+newline
+newline
+printstart promt22
+newline
+printstart promt23
+newline
+printstart promt24
+newline
+food30:
+newline
+printstart promt25
+newline
+newline
+food2:
+inputpromt ; for showcasing > before input
+mov ah,1 ; for taking snacks input
+int 21h
+sub al,48
+check snacks,checker1,al ; return 0 / 1,2,3,4,5,6 ###-### error checking
+part
+newline
+cmp checker1,0 ; chceking if input is valid or not
+jne food1 ;.....................everything is fine go further
+printstart invalid10 ;for invalid input
+mov ah,1 ; for taking destination input
+int 21h
+cmp al,"n"
+je segment7
+newline
+jmp food2
+food1:
+newline
+printstart promt26
+newline
+error2: ; if error return here
+inputpromt
+mov ah,1 ; for taking number of ticket input
+int 21h
+sub al,48
+mov noofsnacks,al ; total number snacks is stored in variable
+cmp al,5 ; chceking if input is valid or not
+jle food3
+newline
+printstart invalid10 ;for invalid input
+mov ah,1 ; for taking no of ticket input
+int 21h
+cmp al,"n"
+je segment7
+newline
+jmp error2
+food3:
+mov al,1
+add foodselect,al
+calcprice checker1,totalscackprice,noofsnacks,snackslist
+newline
+;digitoutput totalscackprice
+;newline
+cmp foodselect,2
+jge segment7
+printstart promt27
+mov ah,1 ; for taking YES/NO input
+int 21h
+cmp al,"n"
+je segment7
+jmp food30
+segment7: ;/////////////////////////////50% and 20% discount
+newline
+newline
+printstart promt28
+newline
+newline
+printstart promt29
+mov ah,1 ; for taking destination input
+int 21h
+cmp al,"n"
+je segment8
+newline
+printstart promt30
+newline
+inputpromt
+lea si,idnumber
+mov ah,1 ; 1st digit check
+int 21h
+sub al,48
+cmp al,1
+jne id11
+mov [si],al
+inc si
+mov ah,1 ; 2nd digit check
+int 21h
+sub al,48
+cmp al,2
+jne id11
+mov [si],al
+inc si
+mov ah,1
+int 21h
+sub al,48
+cmp al,4
+je id12
+cmp al,8
+je id12
+jmp id11
+id12:
+mov [si],al
+inc si
+mov cx,5
+mov ah,1
+idloop:
+int 21h
+sub al,48
+mov [si],al
+inc si
+loop idloop
+mov al,1
+mov discount,al
+;discount part here
+mov al,idnumber[2]
+cmp al,4
+je student
+mov ax,totalticketprice
+mov bl,5
+div bl
+mov ah,0
+mov cx,totalticketprice
+sub cx,ax
+mov totalpricecostnow,cx
+jmp segment8
+student:
+mov ax,totalticketprice
+mov bl,2
+div bl
+mov ah,0
+mov totalpricecostnow,ax
+jmp segment8
+id11:
+newline
+printstart invalid11
+newline
+segment8: ;////////////////////////////diability part
+newline
+newline
+printstart promt31 ; for yes/no of disability patient
+mov ah,1 ; for taking yes/no input
+int 21h
+cmp al,"n"
+je segment9
+mov al,0
+;mov totalticketprice,0
+mov totalpricecostnow,0
+mov ah,1
+mov disabled,ah
+newline
+newline
+printstart promt32
+newline
+newline
+printstart promt33
+mov ah,1 ; for taking yes/no input
+int 21h
+cmp al,"n"
+je segment9
+mov ah,1
+mov assistance,ah
+newline
+segment9: ;////////////////////////////extra luggage part
+newline
+newline
+printstart promt34
+mov ah,1 ; for taking yes/no input
+int 21h
+cmp al,"n"
+je segment10
+newline
+newline
+printstart promt35
+newline
+printstart promt36
+newline
+ll1:
+newline
+printstart promt37
+newline
+l1:
+inputpromt ; for showcasing > before input
+mov ah,1 ; for taking extrabaggage input
+int 21h
+sub al,48
+check luggage,checker2,al ; return 0 / 1,2,3 ###-### error checking part
+newline
+cmp checker2,0 ; chceking if input is valid or not
+jne baggage1 ; .....................everything is fine go further
+printstart invalid10 ; for invalid input
+mov ah,1 ; for taking destination input
+int 21h
+cmp al,"n"
+je segment10
+newline
+jmp l1
+baggage1:
+mov al,1
+add extrabaggage,al
+mov al,50
+mov ah,0
+add totalluggageprice,ax
+mov al,2
+cmp extrabaggage,al
+jge segment10
+printstart promt38
+mov ah,1 ; for taking YES/NO input
+int 21h
+cmp al,"n"
+je segment10
+jmp ll1
+segment10: ;/////////////////////// asking for bill
+mov dx,0
+cmp totalpricecostnow,dx
+jne part2
+mov ax,totalticketprice
+mov bx,totalscackprice
+mov cx,totalluggageprice
+add ax,bx
+add ax,cx
+jmp last
+part2:
+mov ax,totalpricecostnow
+mov bx,totalscackprice
+mov cx,totalluggageprice
+add ax,bx
+add ax,cx
+last:
+mov subtotalfare,ax
+newline
+printstart promt39
+digitoutput subtotalfare
+printstart promt40
+newline
+moneymoney:
+inputpromt
+mov ah,1
+int 21h
+sub al,48
+mov ah,0
+mov bx,1000
+mul bx
+add giventaka,ax
+mov ah,1
+int 21h
+sub al,48
+mov ah,0
+mov bx,100
+mul bx
+add giventaka,ax
+mov ah,1
+int 21h
+sub al,48
+mov ah,0
+mov bx,10
+mul bx
+add giventaka,ax
+mov ah,1
+int 21h
+sub al,48
+mov ah,0
+add giventaka,ax
+taka1:
+mov ax,giventaka
+mov bx,subtotalfare
+sub bx,ax
+cmp bx,0
+je segment12
+jl return
+mov extraneed,bx ; when need extra money
+newline
+printstart promt41
+digitoutput extraneed
+newline
+jmp moneymoney
+return:
+neg bx
+mov returnfare,bx
+segment12:
+newline
+printstart bill01
+newline
+printstart bill10
+newline
+printstart bill11
+call stationfind
+newline
+printstart bill12
+digitoutput totalticketprice
+newline
+mov ax,totalscackprice
+cmp ax,0
+jne end1
+jmp defaultend1
+end1:
+printstart bill13
+digitoutput totalscackprice
+newline
+defaultend1:
+mov al,discount
+cmp al,0
+jne end2
+jmp defaultend2
+end2:
+printstart bill14
+arrprint idnumber
+newline
+printstart bill15
+digitoutput totalpricecostnow
+newline
+defaultend2:
+mov al,disabled
+cmp al,0
+jne end3
+jmp defaultend3
+end3:
+printstart bill16
+newline
+printstart bill15
+digitoutput totalpricecostnow
+newline
+defaultend3:
+mov al,extrabaggage
+cmp al,0
+jne end4
+jmp defaultend4
+end4:
+printstart bill17
+digitoutput totalluggageprice
+newline
+newline
+defaultend4:
+printstart bill18
+digitoutput subtotalfare
+newline
+newline
+printstart bill19
+digitoutputv2 giventaka
+newline
+newline
+printstart bill20
+digitoutput returnfare
+newline
+printstart bill01
+newline
+printstart bill21
+newline
+printstart bill22
+newline
+mainexit:
+newline
+printstart exit10
+newline
+printstart exit11
+;exit to DOS
+MOV AX,4C00H
+INT 21H
+MAIN ENDP
+stationfind proc ; for calculating the ticketprice of customer
+mov cl,checker
+cmp cl,0
+je des1
+cmp cl,1
+je des2
+cmp cl,2
+je des3
+cmp cl,3
+je des4
+cmp cl,4
+je des5
+jmp des6
+des1:
+lea dx,dest1
+mov ah,9
+int 21h
+jmp tempexit
+des2:
+lea dx,dest2
+mov ah,9
+int 21h
+jmp tempexit
+des3:
+lea dx,dest3
+mov ah,9
+int 21h
+jmp tempexit
+des4:
+lea dx,dest4
+mov ah,9
+int 21h
+jmp tempexit
+des5:
+lea dx,dest5
+mov ah,9
+int 21h
+jmp tempexit
+des6:
+lea dx,dest6
+mov ah,9
+int 21h
+jmp tempexit
+tempexit:
+ret
+endp stationfind
+END MAIN
+; [SOURCE]: C:\Users\USER\Downloads\mycode.asm
